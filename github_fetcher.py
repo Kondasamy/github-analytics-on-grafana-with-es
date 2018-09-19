@@ -11,6 +11,8 @@ logger = logging.getLogger(__name__)
 
 def get_config(env):
     """Get configurations based on the key
+    :param env: String value to identify config type
+    :returns : Dictionary of config values
     """
     logger.info(f"Fetching config details related to - {env}..")
     config = configparser.ConfigParser()
@@ -20,15 +22,21 @@ def get_config(env):
 
 
 def get_github_punch_card_data():
+    """Get Github - number of commits per hour in each day
+    """
     github_config = get_config('GITHUB')
-    url = github_config['endpoint']+github_config['punch_card_rsrc']
-    logger.info(f'Firing the GET call - {url}')
-    return requests.get(url)
+    repo_config = get_config('REPOS')
+    auth_headers = {'Authorization': github_config['api_key'],'Content-Type': 'application/json'}
+    for key, value in repo_config.items():
+        print(f'Fetching results for the repo : {key}')
+        url = github_config['endpoint'] + repo_config[key] + github_config['punch_card_rsrc']
+        print(f'Firing the GET call - {url}')
+        requests.get(url, auth_headers)
     
 
 if __name__ == '__main__':
-    response = get_github_punch_card_data()
-    if response.status_code == 200:
-        response.json()
-    else:
-        logger.warn("Failed fetching punch card details!")
+    get_github_punch_card_data()
+    # if response.status_code == 200:
+    #     print(response.json())
+    # else:
+    #     logger.warn("Failed fetching punch card details!")
