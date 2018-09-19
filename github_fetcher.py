@@ -1,6 +1,7 @@
 import configparser
 import requests
 import logging
+from datetime import datetime
 from elasticsearch import Elasticsearch
 
 
@@ -29,13 +30,28 @@ def get_github_punch_card_data():
     auth_headers = {'Authorization': github_config['api_key'],'Content-Type': 'application/json'}
     for key, value in repo_config.items():
         print(f'Fetching results for the repo : {key}')
-        url = github_config['endpoint'] + repo_config[key] + github_config['punch_card_rsrc']
+        url = github_config['endpoint'] + value + github_config['punch_card_rsrc']
         print(f'Firing the GET call - {url}')
-        requests.get(url, auth_headers)
-    
+        response = requests.get(url, auth_headers)
+        if response.status_code == 200:
+            process_punch_data_for_es(response.json())
+        else:
+            logger.warn(f"Failed attempt with status code : {response.status_code}")
+
+
+def process_punch_data_for_es(response):
+    """Structurize punch card data 
+    """
+    pass
+
+
+def push_data_to_es():
+    pass
+
 
 if __name__ == '__main__':
-    get_github_punch_card_data()
+    print(get_config('REPOS'))
+    # get_github_punch_card_data()
     # if response.status_code == 200:
     #     print(response.json())
     # else:
