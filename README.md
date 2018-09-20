@@ -13,3 +13,9 @@ Visualization of Github analytics using Grafana, with Elasticsearch as datastore
    * Individual contributor wise changes (addition, deletion & commits) on each repository till date with weekly timeline
 **Source:** Github API to get contributors list
 [GET /repos/:owner/:repo/stats/contributors]
+
+## Elasticsearch health check displaying document size
+![Elasticsearch healthcheck](https://github.com/Kondasamy/github-analytics-on-grafana-with-es/raw/master/dashboards/Elasticsearch%20healthcheck.png "Elasticsearch healthcheck")
+
+## Grafana dashboard
+![Grafana](https://github.com/Kondasamy/github-analytics-on-grafana-with-es/raw/master/dashboards/Grafana%20dashboard.png "Grafana")
