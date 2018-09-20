@@ -121,9 +121,6 @@ def process_contrib_data_for_es(key, response):
     es_config = get_config('ELASTICSEARCH')
     _es = Elasticsearch([{'host': es_config['host'], 'port': int(es_config['port'])}])
 
-    today = int(datetime.combine(date.today(), time(0, 0, 0)).timestamp()) # unix timestamp
-    past_eigth_day = today - (86400*8) # 8 days * 86400 seconds
-        
     if _es.ping():
         # Setting the mapping of elasticsearch index
         if not _es.indices.exists(es_config['main_index']):
@@ -150,18 +147,7 @@ def process_contrib_data_for_es(key, response):
             _es.indices.create(index=es_config['main_index'], body= mapping)
 
         # Process and populate data to Elasticsearch
-        for hour in response:
-            timestamp = past_eigth_day+3600
-            past_eigth_day = timestamp
-            data = {
-                    'repo': key,
-                    'commits': hour[2],
-                    'timestamp': timestamp
-                }
-            try:
-                _es.index(index=es_config['main_index'], doc_type='punch_card', id=f"{key}_{timestamp}", body=data)
-            except RequestError as re:
-                logger.info(re.info)
+
     else:
         logger.warn("Failed attempt connecting elasticsearch instance")
 
