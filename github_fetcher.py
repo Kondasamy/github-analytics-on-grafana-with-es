@@ -30,9 +30,9 @@ def get_github_punch_card_data():
     repo_config = get_config('REPOS')
     auth_headers = {'Authorization': github_config['api_key'],'Content-Type': 'application/json'}
     for key, value in repo_config.items():
-        print(f'Fetching results for the repo : {key}')
+        logger.info(f'Fetching results for the repo : {key}')
         url = github_config['endpoint'] + value + github_config['punch_card_rsrc']
-        print(f'Firing the GET call - {url}')
+        logger.info(f'Firing the GET call - {url}')
         response = requests.get(url, auth_headers)
         if response.status_code == 200:
             process_punch_data_for_es(key, response.json())
@@ -41,7 +41,9 @@ def get_github_punch_card_data():
 
 
 def process_punch_data_for_es(key, response):
-    """Structurize punch card data 
+    """Structurize punch card data
+    :param key: Denotes the repo name fetched from config file
+    :param response: JSON parsed Response of punch data
     """
     # Elastic search connection
     es_config = get_config('ELASTICSEARCH')
@@ -62,13 +64,7 @@ def process_punch_data_for_es(key, response):
                                 "type": "long"
                             },
                             "repo": {
-                                "type": "text",
-                                "fields": {
-                                    "keyword": {
-                                        "type": "keyword",
-                                        "ignore_above": 256
-                                    }
-                                }
+                                "type": "keyword"
                             },
                             "timestamp": {
                                 "type": "date",
@@ -93,12 +89,11 @@ def process_punch_data_for_es(key, response):
             try:
                 _es.index(index=es_config['index'], doc_type='punch_card', id=f"{key}_{timestamp}", body=data)
             except RequestError as re:
-                print(re.info)
+                logger.info(re.info)
                    
     else:
         logger.warn("Failed attempt connecting elasticsearch instance")
 
 
 if __name__ == '__main__':
-    print(get_config('REPOS')) # 1537284600
     get_github_punch_card_data()
