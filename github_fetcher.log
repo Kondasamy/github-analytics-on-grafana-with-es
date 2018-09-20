@@ -1,8 +1,0 @@
-2018-09-18 23:52:47 INFO {github_fetcher} [get_config] Fetching config details related to - GITHUB..
-2018-09-18 23:52:47 INFO {github_fetcher} [get_github_punch_card_data] Firing the GET call - https://api.github.com/repos/facebook/react/stats/punch_card
-2018-09-19 13:34:21 INFO {github_fetcher} [get_config] Fetching config details related to - GITHUB..
-2018-09-19 13:34:21 INFO {github_fetcher} [get_github_punch_card_data] Firing the GET call - https://api.github.com/repos/facebook/react/stats/punch_card
-2018-09-19 18:55:53 INFO {github_fetcher} [get_config] Fetching config details related to - REPOS..
-2018-09-19 18:58:21 INFO {github_fetcher} [get_config] Fetching config details related to - REPOS..
-2018-09-19 19:11:22 INFO {github_fetcher} [get_config] Fetching config details related to - GITHUB..
-2018-09-19 19:11:22 INFO {github_fetcher} [get_config] Fetching config details related to - REPOS..

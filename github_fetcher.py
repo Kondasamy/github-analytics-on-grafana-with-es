@@ -6,7 +6,7 @@ from elasticsearch import Elasticsearch, helpers, RequestError
 
 
 # Logger config
-logging.basicConfig(filename='github_fetcher.log', format='%(asctime)s %(levelname)s {%(module)s} [%(funcName)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.INFO)
+logging.basicConfig(filename='github_fetcher.log', format='%(asctime)s %(levelname)s {%(module)s} [%(funcName)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.WARN)
 logger = logging.getLogger(__name__)
 
 
@@ -123,11 +123,11 @@ def process_contrib_data_for_es(key, response):
 
     if _es.ping():
         # Setting the mapping of elasticsearch index
-        if not _es.indices.exists(es_config['main_index']):
+        if not _es.indices.exists(es_config['contrib_index']):
             mapping = '''
             {
                 "mappings": {
-                    "contributors": {
+                    "contribs": {
                         "properties": {
                             "repo": {
                                 "type": "keyword"
@@ -167,7 +167,7 @@ def process_contrib_data_for_es(key, response):
                     'deletion': week['d'],
                     'commits': week['c'],
                 }
-                _es.index(index=es_config['contrib_index'], doc_type='contribs', id=f"{week['a']}_{week['w']}", body=data)
+                _es.index(index=es_config['contrib_index'], doc_type='contribs', id=f"{author}_{week['w']}", body=data)
     else:
         logger.warn("Failed attempt connecting elasticsearch instance")
 
