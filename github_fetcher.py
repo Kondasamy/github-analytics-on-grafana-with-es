@@ -113,9 +113,9 @@ def get_github_contributors_data():
 
 
 def process_contrib_data_for_es(key, response):
-    """Structurize punch card data
+    """Structurize github repo contributors data
     :param key: Denotes the repo name fetched from config file
-    :param response: JSON parsed Response of punch data
+    :param response: JSON parsed Response of contributors data
     """
     # Elastic search connection
     es_config = get_config('ELASTICSEARCH')
@@ -127,30 +127,51 @@ def process_contrib_data_for_es(key, response):
             mapping = '''
             {
                 "mappings": {
-                    "punch_card": {
+                    "contributors": {
                         "properties": {
-                            "commits": {
-                                "type": "long"
-                            },
                             "repo": {
+                                "type": "keyword"
+                            },
+                            "author": {
                                 "type": "keyword"
                             },
                             "timestamp": {
                                 "type": "date",
                                 "format": "epoch_second"
+                            },
+                            "addition": {
+                                "type": "long"
+                            },
+                            "deletion": {
+                                "type": "long"
+                            },
+                            "commits": {
+                                "type": "long"
                             }
                         }
                     }
                 }
             }
             '''
-            _es.indices.create(index=es_config['main_index'], body= mapping)
+            _es.indices.create(index=es_config['contrib_index'], body= mapping)
 
         # Process and populate data to Elasticsearch
-
+        for contributor in response:
+            author = contributor['author']['login']
+            for week in contributor['weeks']:
+                data = {
+                    'repo': key,
+                    'author': author,
+                    'timestamp': week['w'],
+                    'addition': week['a'],
+                    'deletion': week['d'],
+                    'commits': week['c'],
+                }
+                _es.index(index=es_config['contrib_index'], doc_type='contribs', id=f"{week['a']}_{week['w']}", body=data)
     else:
         logger.warn("Failed attempt connecting elasticsearch instance")
 
 
 if __name__ == '__main__':
     get_github_punch_card_data()
+    get_github_contributors_data()
